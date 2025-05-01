@@ -1,50 +1,58 @@
 <div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-6">
-        {{ isset($book) ? 'Chỉnh Sửa Sách' : 'Thêm Sách Mới' }}
-    </h1>
-    <form action="{{ isset($book) ? route('books.update', $book->id) : route('books.store') }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-lg">
+    <form action="{{ isset($book) ? route('books.update', $book->id) : route('books.store') }}" method="POST">
         @csrf
         @if(isset($book))
             @method('PUT')
         @endif
+        <label class="block">Tên Sách:</label>
+        <input type="text" name="title" value="{{ $book->title ?? '' }}" class="border rounded px-4 py-2 w-full">
 
-        <div class="mb-4">
-            <label for="title" class="block text-gray-700 font-bold mb-2">Tên Sách:</label>
-            <input type="text" name="title" id="title" value="{{ $book->title ?? '' }}" class="border rounded px-4 py-2 w-full" placeholder="Nhập tên sách" required>
-        </div>
+        <label class="block">Mô tả:</label>
+        <textarea name="description" class="border rounded px-4 py-2 w-full">{{ $book->description ?? '' }}</textarea>
 
-        <div class="mb-4">
-            <label for="description" class="block text-gray-700 font-bold mb-2">Mô Tả:</label>
-            <textarea name="description" id="description" class="border rounded px-4 py-2 w-full" placeholder="Nhập mô tả">{{ $book->description ?? '' }}</textarea>
-        </div>
+        <label class="block">Tác giả:</label>
+        <select name="authors[]" multiple class="border rounded px-4 py-2 w-full">
+            @foreach ($authors as $author)
+                <option value="{{ $author->id }}" {{ isset($book) && $book->authors->contains($author->id) ? 'selected' : '' }}>
+                    {{ $author->name }}
+                </option>
+            @endforeach
+        </select>
 
-        <div class="mb-4">
-            <label for="authors" class="block text-gray-700 font-bold mb-2">Tác Giả:</label>
-            <select name="authors[]" id="authors" multiple class="border rounded px-4 py-2 w-full">
-                @foreach ($authors as $author)
-                    <option value="{{ $author->id }}" {{ isset($book) && $book->authors->contains($author->id) ? 'selected' : '' }}>
-                        {{ $author->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-4 rounded">
+            {{ isset($book) ? 'Cập nhật' : 'Thêm' }}
+        </button>
+    </form>
+</div>
+<div class="container mx-auto">
+    <form action="{{ isset($book) ? route('books.update', $book->id) : route('books.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @if(isset($book))
+            @method('PUT')
+        @endif
+        <label class="block">Tên Sách:</label>
+        <input type="text" name="title" value="{{ $book->title ?? '' }}" class="border rounded px-4 py-2 w-full">
 
+        <label class="block">Mô tả:</label>
+        <textarea name="description" class="border rounded px-4 py-2 w-full">{{ $book->description ?? '' }}</textarea>
 
-        <div class="mb-4">
-            <label for="image" class="block text-gray-700 font-bold mb-2">Hình Ảnh:</label>
-            <input type="file" name="image" id="image" class="border rounded px-4 py-2 w-full">
-            @if(isset($book) && $book->image)
-                <div class="mt-4">
-                    <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->title }}" class="max-w-full h-auto rounded shadow">
-                </div>
-            @endif
-        </div>
+        <label class="block">Tác giả:</label>
+        <select name="authors[]" multiple class="border rounded px-4 py-2 w-full">
+            @foreach ($authors as $author)
+                <option value="{{ $author->id }}" {{ isset($book) && $book->authors->contains($author->id) ? 'selected' : '' }}>
+                    {{ $author->name }}
+                </option>
+            @endforeach
+        </select>
 
+        <label class="block">Hình ảnh:</label>
+        <input type="file" name="image" class="border rounded px-4 py-2 w-full">
+        @if(isset($book) && $book->image)
+            <img src="{{ asset('storage/' . $book->image) }}" alt="{{ $book->title }}" class="mt-4 max-w-xs">
+        @endif
 
-        <div class="text-center">
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
-                {{ isset($book) ? 'Cập Nhật' : 'Thêm' }}
-            </button>
-        </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 mt-4 rounded">
+            {{ isset($book) ? 'Cập nhật' : 'Thêm' }}
+        </button>
     </form>
 </div>

@@ -1,24 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Models\Book;
 use App\Models\Author;
-use App\Http\Controllers\AdminController;
-
-
-
-Route::get('/dashboard', function () {
-    $totalBooks = Book::count();
-    $totalAuthors = Author::count();
-    return view('dashboard', compact('totalBooks', 'totalAuthors'));
-})->name('dashboard');
-Route::get('/books',[BookController::class ,'index'])->name('books.index');
-
-
+use App\Models\User;
+use App\Http\Controllers\Controller;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,7 +17,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [BookController::class, 'index'])->name('books.index');
+    Route::get('/', [BookController::class,'index'])->name('books.index');
     Route::resource('books', BookController::class);
     Route::resource('authors', AuthorController::class);
 
@@ -50,4 +40,12 @@ Route::post('/books/{book}/rate', [BookController::class, 'rate'])->name('books.
 Route::middleware(['role:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 });
+
+Route::get('/dashboard', function () {
+    $totalBooks = Book::count();
+    $totalAuthors = Author::count();
+    return view('dashboard', compact('totalBooks', 'totalAuthors'));
+})->name('dashboard');
+
+
 require __DIR__.'/auth.php';

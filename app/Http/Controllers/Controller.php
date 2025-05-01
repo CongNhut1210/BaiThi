@@ -4,21 +4,23 @@ namespace App\Http\Controllers;
 use Spatie\Permission\Models\Role;
 use Illuminate\Container\Attributes\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
+
 
 
 abstract class Controller
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, HasRoles;
 public function assignUserRole()
 {
     $user = Auth::user();
     $roleName = 'user';
-
-    // Kiểm tra nếu role đã tồn tại trong database:
     if (!Role::where('name', $roleName)->exists()) {
         Role::create(['name' => $roleName]);
     }
-
-    // Gán role cho user:
     $user->assignRole($roleName);
 
     return redirect()->back()->with('success', 'Vai trò đã được gán thành công!');
